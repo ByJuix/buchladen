@@ -6,52 +6,110 @@ $title = 'Tabellenübersicht';
 include 'includes/header.php'; 
 ?>
 
+
 <div class="h-full flex flex-col">
-    <div class="border-b-4 border-slate-200">
+    <div class="w-full border-b-4 border-slate-200 flex flex-row justify-between">
         <h1 class="text-2xl font-bold m-8 leading-none"><?php echo $title; ?></h1>
+        <?php if (isset($_GET['table'])) echo "<button href='?table={$_GET['table']}&action=new' class='text-green-500 m-8' id='new_entry'><i data-lucide='circle-plus'></i></button>"; ?>
     </div>
-    <div class="m-8">
 
 <?php
-if (isset($_GET['table'])) {
-    // Ein Tabellenname wurde in der URL angegeben. Zeige den Inhalt der Tabelle an.
-    $table = $_GET['table'];
-    $result = $dbAdapter->db_query("SELECT * FROM {$table}");
+$_GET['action'] ??= NULL;
 
-    // Beginne die Tabelle und füge die Überschriften hinzu.
-    echo "<table class='border-collapse table-auto w-full text-left'>";
-    if (!empty($result)) {
-        echo "<tr>";
-        foreach (array_keys($result[0]) as $columnName) {
-            // Ersetze Unterstriche durch Leerzeichen und mache den ersten Buchstaben groß.
-            $columnName = str_replace('_', ' ', $columnName);
-            $columnName = ucfirst($columnName);
-            echo "<th>{$columnName}</th>";
+switch ($_GET['action']) {
+    case 'new':
+        // Code for 'new' action
+        break;
+    case 'edit':
+        // Code for 'edit' action
+        break;
+    case 'delete':
+        $result = $dbAdapter->db_query("DELETE FROM {$_GET['table']} WHERE {$_GET['table']}_id = {$_GET['id']}");
+        header("Location: buchladen.php?table={$_GET['table']}");
+        
+        break;
+    default:
+        if (isset($_GET['table'])) {
+        // Get the column names
+        $columns = $dbAdapter->db_query("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_name = '{$_GET['table']}'");
+
+        echo "<div class='new hidden invisible w-full p-8 border-b-4 border-slate-200 flex flex-row justify-between'>";
+
+        // Create an input field for each column
+        foreach ($columns as $column) {
+            $columnName = $column['COLUMN_NAME'];
+            echo "<input type='text' name='{$columnName}' placeholder='{$columnName}' class='px-4 py-2 bg-slate-200 rounded-full mr-4'>";
         }
-        echo "</tr>";
 
-        // Füge die Datenzeilen hinzu.
-        foreach ($result as $row) {
+        echo "<a href='?table={$_GET['table']}&action=new' class='text-green-500'><i data-lucide='check'></i></a>";
+
+        echo "</div>";
+
+        // Ein Tabellenname wurde in der URL angegeben. Zeige den Inhalt der Tabelle an.
+        $result = NULL;
+        $result = $dbAdapter->db_query("SELECT * FROM {$_GET['table']}");
+
+        // Beginne die Tabelle und füge die Überschriften hinzu.
+        echo "<div class='m-8'><table class='border-collapse table-auto w-full text-left'>";
+        if (!empty($result)) {
             echo "<tr>";
-            foreach ($row as $cell) {
-                echo "<td>{$cell}</td>";
+            foreach (array_keys($result[0]) as $columnName) {
+                // Ersetze Unterstriche durch Leerzeichen und mache den ersten Buchstaben groß.
+                $columnName = str_replace('_', ' ', $columnName);
+                $columnName = ucfirst($columnName);
+                echo "<th>{$columnName}</th>";
             }
             echo "</tr>";
-        }
-    }
-    echo "</table>";
-} else {
-    // Kein Tabellenname wurde angegeben. Zeige die Übersichtsseite an.
-    $result = $dbAdapter->db_query("SHOW TABLES");
-    foreach ($result as $table) {
-        // Erstelle einen Link für jede Tabelle.
-        $tableName = $table["Tables_in_buchladen"];
-        echo "<a href=\"?table={$tableName}\">{$tableName}</a><br><br>";
-    }
-}
-?>
 
-    </div>
+            // Füge die Datenzeilen hinzu.
+            foreach ($result as $row) {
+                echo "<tr>";
+                $firstCell = null;
+                foreach ($row as $cell) {
+                    if ($firstCell === null) {
+                        $firstCell = $cell;
+                    }
+                    echo "<td>{$cell}</td>";
+                }
+                // Füge die erste Zelle am Ende der Zeile erneut hinzu.
+                echo "
+                <td class='flex fex-row'>
+                    <a href='?table={$_GET['table']}&id={$firstCell}&action=delete' class='text-red-500 mr-4'><i data-lucide='circle-x'></i></a>
+                    <a href='?table={$_GET['table']}&id={$firstCell}&action=edit' class='text-yellow-500'><i data-lucide='pencil'></i></a>
+                </td>
+                ";
+                echo "</tr>";
+            }
+        }
+        echo "</table></div>";
+
+        } else {
+            // Kein Tabellenname wurde angegeben. Zeige die Übersichtsseite an.
+            $result = $dbAdapter->db_query("SHOW TABLES");
+            foreach ($result as $table) {
+                // Erstelle einen Link für jede Tabelle.
+                $tableName = $table["Tables_in_buchladen"];
+                // Wenn der Tabellenname "-has-" enthält, überspringe die Anzeige.
+                if (strpos($tableName, '_has_') !== false) {
+                    continue;
+                }
+                echo "<a href=\"?table={$tableName}\">{$tableName}</a><br><br>";
+            }
+        }
+        break;
+}
+
+
+
+?>
 </div>
+<script>
+    document.getElementById('new_entry').addEventListener('click', function(event) {
+        event.preventDefault();
+        var newDiv = document.querySelector('.new');
+        newDiv.classList.remove('hidden');
+        newDiv.classList.remove('invisible');
+    });
+</script>
 
 <?php include 'includes/footer.php'; ?>
