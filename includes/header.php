@@ -17,7 +17,9 @@
     <header>
         <nav class="p-4 pt-8">
             <div class="flex justify-between items-center">
-                <a href="index.php" class="font-bold">Buchladen</a>
+                <a href="index.php" class="font-bold">
+                    <img src="./includes/img/logo.png" alt="Buchladen" class="h-8">
+                </a>
                 <ul class="flex space-x-8 text-white">
                     <li><a href="index.php" class="px-4 py-2 bg-blue-500 rounded-full">Home</a></li>
                     <li><a href="buchladen.php" class="px-4 py-2 bg-blue-500 rounded-full">Buchladen</a></li>

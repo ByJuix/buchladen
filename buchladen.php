@@ -109,6 +109,9 @@ switch ($_GET['action']) {
         echo "</table></div>";
 
         } else {
+            // Beginne die Tabelle und füge die Überschriften hinzu.
+            echo "<div class='m-8'><table class='border-collapse table-auto w-full text-left'>";
+
             // Kein Tabellenname wurde angegeben. Zeige die Übersichtsseite an.
             $result = $dbAdapter->db_query("SHOW TABLES");
             foreach ($result as $table) {
@@ -118,8 +121,12 @@ switch ($_GET['action']) {
                 if (strpos($tableName, '_has_') !== false) {
                     continue;
                 }
+                // Ersetze Unterstriche durch Leerzeichen und mache den ersten Buchstaben groß.
+                $tableName = str_replace('_', ' ', $tableName);
+                $tableName = ucfirst($tableName);
                 echo "<a href=\"?table={$tableName}\">{$tableName}</a><br><br>";
-            }
+            } 
+            echo "</table></div>";
         }
         break;
 }
