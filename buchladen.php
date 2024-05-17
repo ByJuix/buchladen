@@ -18,7 +18,32 @@ $_GET['action'] ??= NULL;
 
 switch ($_GET['action']) {
     case 'new':
-        // Code for 'new' action
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['table'])) {
+            $table = $_GET['table'];
+            $columns = $dbAdapter->db_query("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_name = '{$table}'");
+            $insertColumns = [];
+            $insertValues = [];
+    
+            foreach ($columns as $column) {
+                $columnName = $column['COLUMN_NAME'];
+                if (isset($_POST[$columnName])) {
+                    $insertColumns[] = $columnName;
+                    $insertValues[] = $_POST[$columnName];
+                }
+            }
+    
+            if (!empty($insertColumns) && !empty($insertValues)) {
+                $insertColumnsString = implode(', ', $insertColumns);
+                // Format the values to be in quotes
+                $insertValuesString = implode(', ', array_map(function($value) {
+                    return "'{$value}'";
+                }, $insertValues));
+                $query = "INSERT INTO {$table} ({$insertColumnsString}) VALUES ({$insertValuesString})";
+                $result = $dbAdapter->db_query($query);
+            }
+        }
+        header("Location: buchladen.php?table={$_GET['table']}");
+
         break;
     case 'edit':
         // Code for 'edit' action
@@ -33,7 +58,7 @@ switch ($_GET['action']) {
         // Get the column names
         $columns = $dbAdapter->db_query("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_name = '{$_GET['table']}'");
 
-        echo "<div class='new hidden invisible w-full p-8 border-b-4 border-slate-200 flex flex-row justify-between'>";
+        echo "<div class='new hidden invisible w-full p-8 border-b-4 border-slate-200 flex flex-row justify-between'><form action='?table={$_GET['table']}&action=new' method='post'>";
 
         // Create an input field for each column
         foreach ($columns as $column) {
@@ -41,9 +66,9 @@ switch ($_GET['action']) {
             echo "<input type='text' name='{$columnName}' placeholder='{$columnName}' class='px-4 py-2 bg-slate-200 rounded-full mr-4'>";
         }
 
-        echo "<a href='?table={$_GET['table']}&action=new' class='text-green-500'><i data-lucide='check'></i></a>";
+        echo "<button class='text-green-500'><i data-lucide='check'></i></button>";
 
-        echo "</div>";
+        echo "</form></div>";
 
         // Ein Tabellenname wurde in der URL angegeben. Zeige den Inhalt der Tabelle an.
         $result = NULL;
