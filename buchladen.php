@@ -55,58 +55,79 @@ switch ($_GET['action']) {
         break;
     default:
         if (isset($_GET['table'])) {
-        // Get the column names
-        $columns = $dbAdapter->db_query("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_name = '{$_GET['table']}'");
+            // Get the column names
+            $columns = $dbAdapter->db_query("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_name = '{$_GET['table']}'");
 
-        echo "<div class='new hidden invisible w-full p-8 border-b-4 border-slate-200 flex flex-row justify-between'><form action='?table={$_GET['table']}&action=new' method='post'>";
+            echo "<div class='new hidden invisible w-full p-8 border-b-4 border-slate-200 flex flex-row justify-between'><form action='?table={$_GET['table']}&action=new' method='post'>";
 
-        // Create an input field for each column
-        foreach ($columns as $column) {
-            $columnName = $column['COLUMN_NAME'];
-            echo "<input type='text' name='{$columnName}' placeholder='{$columnName}' class='px-4 py-2 bg-slate-200 rounded-full mr-4'>";
-        }
-
-        echo "<button class='text-green-500'><i data-lucide='check'></i></button>";
-
-        echo "</form></div>";
-
-        // Ein Tabellenname wurde in der URL angegeben. Zeige den Inhalt der Tabelle an.
-        $result = NULL;
-        $result = $dbAdapter->db_query("SELECT * FROM {$_GET['table']}");
-
-        // Beginne die Tabelle und füge die Überschriften hinzu.
-        echo "<div class='m-8'><table class='border-collapse table-auto w-full text-left'>";
-        if (!empty($result)) {
-            echo "<tr>";
-            foreach (array_keys($result[0]) as $columnName) {
-                // Ersetze Unterstriche durch Leerzeichen und mache den ersten Buchstaben groß.
-                $columnName = str_replace('_', ' ', $columnName);
-                $columnName = ucfirst($columnName);
-                echo "<th>{$columnName}</th>";
+            // Create an input field for each column
+            foreach ($columns as $column) {
+                $columnName = $column['COLUMN_NAME'];
+                echo "<input type='text' name='{$columnName}' placeholder='{$columnName}' class='px-4 py-2 bg-slate-200 rounded-full mr-4'>";
             }
-            echo "</tr>";
 
-            // Füge die Datenzeilen hinzu.
-            foreach ($result as $row) {
+            echo "<button class='text-green-500'><i data-lucide='check'></i></button>";
+
+            echo "</form></div>";
+
+            // Ein Tabellenname wurde in der URL angegeben. Zeige den Inhalt der Tabelle an.
+            $result = NULL;
+            $result = $dbAdapter->db_query("SELECT * FROM {$_GET['table']}");
+
+            // Beginne die Tabelle und füge die Überschriften hinzu.
+            echo "<div class='m-8'><table class='border-collapse table-auto w-full text-left'>";
+            if (!empty($result)) {
                 echo "<tr>";
-                $firstCell = null;
-                foreach ($row as $cell) {
-                    if ($firstCell === null) {
-                        $firstCell = $cell;
-                    }
-                    echo "<td>{$cell}</td>";
+                foreach (array_keys($result[0]) as $columnName) {
+                    // Ersetze Unterstriche durch Leerzeichen und mache den ersten Buchstaben groß.
+                    $columnName = str_replace('_', ' ', $columnName);
+                    $columnName = ucfirst($columnName);
+                    echo "<th>{$columnName}</th>";
                 }
-                // Füge die erste Zelle am Ende der Zeile erneut hinzu.
-                echo "
-                <td class='flex fex-row'>
-                    <a href='?table={$_GET['table']}&id={$firstCell}&action=delete' class='text-red-500 mr-4'><i data-lucide='circle-x'></i></a>
-                    <a href='?table={$_GET['table']}&id={$firstCell}&action=edit' class='text-yellow-500'><i data-lucide='pencil'></i></a>
-                </td>
-                ";
                 echo "</tr>";
+
+                // Füge die Datenzeilen hinzu.
+                foreach ($result as $row) {
+                    echo "<tr>";
+                        $firstCell = null;
+                        foreach ($row as $cell) {
+                            if ($firstCell === null) {
+                                $firstCell = $cell;
+                            }
+                            echo "<td>{$cell}</td>";
+                        }
+                        // Füge die erste Zelle am Ende der Zeile erneut hinzu.
+                        echo "
+                        <td class='flex fex-row'>
+                            <a href='?table={$_GET['table']}&id={$firstCell}&action=delete' class='text-red-500 mr-4'><i data-lucide='circle-x'></i></a>
+                            <a href='' class='text-yellow-500 edit-button'><i data-lucide='pencil'></i></a>
+                        </td>
+                    </tr>
+                    <tr class='hidden'>
+                        <td colspan='" . count($row) . "'>
+                            <form action='?table={$_GET['table']}&id={$firstCell}&action=edit' method='post'>
+                                ";
+                                foreach ($row as $columnName => $cell) {
+                                    echo "<input type='text' name='{$columnName}' value='{$cell}' class='px-4 py-2 bg-slate-200 rounded-full mr-4'>";
+                                }
+                                echo "<button class='text-green-500'><i data-lucide='check'></i></button>
+                            </form>
+                        </td>
+                    </tr>";                    
+                }
             }
-        }
-        echo "</table></div>";
+            echo <<<HTML
+                </table></div>
+                <script>
+                    document.querySelectorAll('.edit-button').forEach(function(button) {
+                        button.addEventListener('click', function(event) {
+                            event.preventDefault();
+                            var editRow = this.parentNode.parentNode.nextElementSibling;
+                            editRow.classList.remove('hidden');
+                        });
+                    });
+                </script>
+            HTML;
 
         } else {
             // Beginne die Tabelle und füge die Überschriften hinzu.
