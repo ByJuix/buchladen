@@ -105,16 +105,16 @@ switch ($_GET['action']) {
             $result = $dbAdapter->db_query("SELECT * FROM {$_GET['table']}");
 
             // Beginne die Tabelle und füge die Überschriften hinzu.
-            echo "<div class='m-8'><table class='border-collapse table-fixed w-full text-left'>";
+            echo "<div class='m-8'><table class='border-collapse table-fixed w-full text-left tablesorter' id='table'>";
             if (!empty($result)) {
-                echo "<tr>";
+                echo "<thead><tr>";
                 foreach (array_keys($result[0]) as $columnName) {
                     // Ersetze Unterstriche durch Leerzeichen und mache den ersten Buchstaben groß.
                     $columnName = str_replace('_', ' ', $columnName);
                     $columnName = ucfirst($columnName);
                     echo "<th>{$columnName}</th>";
                 }
-                echo "</tr>";
+                echo "</tr></thead><tbody>";
 
                 // Füge die Datenzeilen hinzu.
                 foreach ($result as $row) {
@@ -151,7 +151,7 @@ switch ($_GET['action']) {
                 }
             }
             echo <<<HTML
-                </table></div>
+                </tbody></table></div>
                 <script>
                     document.querySelectorAll('.edit-button').forEach(function(button) {
                         button.addEventListener('click', function(event) {
@@ -166,7 +166,7 @@ switch ($_GET['action']) {
                     document.querySelectorAll('.cancel-edit-button').forEach(function(button) {
                         button.addEventListener('click', function(event) {
                             event.preventDefault();
-                            var editRow = this.parentNode.parentNode;
+                            var editRow = this.parentNode.parentNode.parentNode.parentNode;
                             editRow.classList.add('hidden');
                             var originalRow = editRow.previousElementSibling;
                             originalRow.classList.remove('hidden');
