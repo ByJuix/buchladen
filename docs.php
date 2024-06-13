@@ -1,8 +1,4 @@
 <?php
-include_once './includes/php/parsedown.php';
-$Parsedown = new Parsedown();
-$docs = file_get_contents('./docs.md');
-
 $title = 'Nutzerhandbuch'; 
 include 'includes/header.php'; 
 ?>
