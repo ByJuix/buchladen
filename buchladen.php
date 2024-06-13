@@ -88,7 +88,7 @@ switch ($_GET['action']) {
             // Get the column names
             $columns = $dbAdapter->db_query("SELECT COLUMN_NAME FROM information_schema.columns WHERE table_name = '{$_GET['table']}'");
 
-            echo "<div class='new hidden invisible w-full p-8 border-b-4 border-slate-200 flex flex-row justify-between'><form action='?table={$_GET['table']}&action=new' method='post'>";
+            echo "<div class='new hidden invisible w-full p-8 border-b-4 border-slate-200 flex flex-row justify-between'><form class='flex flex-row items-center' action='?table={$_GET['table']}&action=new' method='post'>";
 
             // Create an input field for each column
             foreach ($columns as $column) {
