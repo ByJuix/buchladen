@@ -16,7 +16,7 @@
             <i data-lucide="database" class="w-32 h-32 mb-4"></i>
             SQL-Statement
         </a>
-        <a href="docs/" class="flex flex-col items-center justify-center bg-blue-500 text-white px-8 py-4 rounded-xl text-xl">
+        <a href="docs.php" class="flex flex-col items-center justify-center bg-blue-500 text-white px-8 py-4 rounded-xl text-xl">
             <i data-lucide="album" class="w-32 h-32 mb-4"></i>
             Nutzerhandbuch
         </a>

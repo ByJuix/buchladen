@@ -26,7 +26,7 @@
                     <li><a href="index.php" class="px-4 py-2 bg-blue-500 rounded-full">Home</a></li>
                     <li><a href="buchladen.php" class="px-4 py-2 bg-blue-500 rounded-full">Buchladen</a></li>
                     <li><a href="sql.php" class="px-4 py-2 bg-blue-500 rounded-full">SQL-Statements</a></li>
-                    <li><a href="nutzerhandbuch.php" class="px-4 py-2 bg-blue-500 rounded-full">Nutzerhandbuch</a></li>
+                    <li><a href="docs.php" class="px-4 py-2 bg-blue-500 rounded-full">Nutzerhandbuch</a></li>
                 </ul>
             </div>
         </nav>

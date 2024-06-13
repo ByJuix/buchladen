@@ -14,4 +14,11 @@ Bevor Sie beginnen, stellen Sie sicher, dass Sie folgende Software installiert h
 - PHP 8.0 oder höher
 - MySQL-Datenbankserver
 
+## Dependencies
+- PHP PDO
+- Tailwind CSS
+- JQuery
+- JQuery Tablesorter
+- Parsedown
+
 ## Installation
