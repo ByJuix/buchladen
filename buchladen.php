@@ -141,7 +141,7 @@ switch ($_GET['action']) {
                                     echo "<div class='input-field pr-4'><input type='text' name='{$columnName}' value='{$cell}' class='px-4 py-2 bg-slate-200 rounded-full w-full'></div>";
                                 }
                                 echo "
-                                <div>
+                                <div class='flex items-center'>
                                     <button type='submit' class='text-green-500 mr-4'><i data-lucide='check'></i></button>
                                     <button class='text-red-500 cancel-edit-button'><i data-lucide='circle-x'></i></button>
                                 </div>
